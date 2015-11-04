@@ -1,0 +1,5 @@
+count=50
+if [[ $1 != "" ]]; then
+  count=$1
+fi
+python ./sharen.py $count

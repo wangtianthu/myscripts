@@ -17,7 +17,7 @@ class Coverage:
     self.branch_a = self.branch_t + branch_a
 
   def report(self):
-    return "%4d classes, lines %6d / %6d  (%6.2f %%), branches %6d / %6d  (%6.2f %%)" % (
+    return "C: %4d, L %6d / %6d  (%6.2f %%), B %6d / %6d  (%6.2f %%)" % (
       self.num_class,
       self.line_t, self.line_a, float(self.line_t) / self.line_a * 100.0 if self.line_a > 0 else 0.0,
       self.branch_t, self.branch_a, float(self.branch_t) / self.branch_a * 100.0 if self.branch_a > 0 else 0.0)
@@ -57,17 +57,17 @@ if __name__ == "__main__":
   if not found:
     print "Cannot find start of the report"
     exit
-      
+
   # report is a map from package name to its report
   report = {}
   i = i + 1
   while i + 6 < len(lines):
-    # print "--- processing lines ----\n%s" % (lines[i:i+5])
+    print "--- processing lines ----\n%s" % (lines[i:i+5])
     try:
       package = lines[i].strip().split()[0]
     except:
       package = ""
-    if not "." in package:
+    if not package:
       break
     
     classes =       get_number(lines[i].strip().split()[1])
@@ -86,7 +86,9 @@ if __name__ == "__main__":
 
   keys = report.keys()
   keys.sort()
+  spaces = " " * 40
   for pkg in keys:
-    print("%-80s %s" % (pkg, report[pkg].report()))
+    pkg_disp = pkg.replace("com.twitter", "c.t")
+    print("%-60s %s" % (pkg_disp, report[pkg].report()))
 
             

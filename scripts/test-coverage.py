@@ -12,7 +12,8 @@ class Coverage:
   def add(self, num_class, line_t, line_a, branch_t, branch_a):
     self.num_class = self.num_class + num_class
     self.line_t = self.line_t + line_t
-    self.line_a = self.line_t + line_a
+    # print "(line added %d + %d = %d)" % (self.line_a, line_a, self.line_a + line_a)
+    self.line_a = self.line_a + line_a
     self.branch_t = self.branch_t + branch_t
     self.branch_a = self.branch_t + branch_a
 
@@ -39,6 +40,8 @@ def get_number(item):
   except ValueError:
     return 0
 
+interested = ["com.twitter.search", "com.twitter.expertsearch", "com.twitter.typeahead"]
+  
 if __name__ == "__main__":
   filename = sys.argv[1]
   
@@ -62,13 +65,22 @@ if __name__ == "__main__":
   report = {}
   i = i + 1
   while i + 6 < len(lines):
-    print "--- processing lines ----\n%s" % (lines[i:i+5])
     try:
       package = lines[i].strip().split()[0]
     except:
       package = ""
     if not package:
       break
+    good = False
+    for intr in interested:
+      if package.startswith(intr):
+        good = True
+        break
+    if not good:
+      i = i + 6
+      continue
+          
+    # print ":: %s" % (lines[i:i+5])
     
     classes =       get_number(lines[i].strip().split()[1])
     lines_tested =  get_number(lines[i + 2].strip().split("/")[0])
@@ -79,12 +91,14 @@ if __name__ == "__main__":
 
     for pkg in get_all_parents(package):
       if not pkg in report:
+        # print "-- updating for %s (+%d)" % (pkg, lines_all)
         report[pkg] = Coverage(classes, lines_tested, lines_all, branch_tested, branch_all)
       else:
+        # print "-- adding for %s (+%d)" % (pkg, lines_all)
         cov = report[pkg]
-        cov.add(classes,lines_tested, lines_all, branch_tested, branch_all)
+        cov.add(classes, lines_tested, lines_all, branch_tested, branch_all)
 
-  keys = report.keys()
+  keys = list(report.keys())
   keys.sort()
   spaces = " " * 40
   for pkg in keys:

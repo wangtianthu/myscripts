@@ -1,0 +1,61 @@
+#!/bin/bash
+# Smart git checkout.
+# Just do:
+#    co [part of the branch name]
+# it will then find all matching branches, if there is only one, it will check it out,
+# if not, it prints out all matching ones and you can further drill down by providing
+# another keyword. It does automatic stashing and unstashing as well.
+
+key=$1
+
+if [[ $key == "" ]]; then
+    git branch
+    exit 0
+fi
+
+file=/tmp/co_matches
+
+cur_branch=$(git branch | grep "*" | cut -d" " -f2)
+git branch | grep -v "*" | egrep "$key" > $file
+
+while true; do
+    numlines=$(cat $file | wc -l | sed 's/ //g')
+    if [[ $numlines == "0" ]]; then
+	echo "No such branch, or you are on it right now."
+	echo
+	tput bel
+	exit 0
+    elif [[ $numlines == "1" ]]; then
+	branch=$(cat $file)
+	echo "Checking out branch '$branch'..."
+	git checkout $branch 
+	if [[ $? != 0 ]]; then
+	    tput bel
+	    echo -n "Checkout failed, stash your current branch and try again (y/n)? "
+	    read answer
+	    if [[ $answer == "y" ]]; then
+		echo "Stashing your current branch..."
+		git stash
+		echo "Checking out again branch '$branch'..."
+		git checkout $branch || tput bel
+		echo "Checkout Done"
+	    else
+		echo "Please stash or commit what you have on this branch before switching to another."
+		echo
+	    fi
+	fi
+	echo "All Done"
+	echo
+	exit 0
+    else
+	echo "Multiple branches match your keyword:"
+	echo
+	cat $file
+	echo
+	echo -n "Type a new keyword to grep with: "
+	read newkey
+	cp $file ${file}_tmp
+	cat ${file}_tmp | egrep "$newkey" > $file
+    fi
+done
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+name=$1
+
+file=$(find src tests | grep $name | grep -v "~")
+if [[ $? == 0 ]]; then
+  echo
+  for f in $file; do
+    echo "Opening $f ..."
+    open "https://cgit.twitter.biz/source/tree/science/$f"
+  done
+  echo
+  exit 0
+fi
+
+echo "Cannot find this class"
+echo
+exit 1
+

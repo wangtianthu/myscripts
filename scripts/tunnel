@@ -1,0 +1,57 @@
+#!/bin/bash
+
+if [[ $1 == "d" ]]; then
+  # usage 1: "d" to kill all ssh processes
+  echo "Will kill following processes:"
+  echo "=================================="
+  ps aux | grep smf | egrep "(8686|5005)"
+  echo "=================================="
+  echo "Killing..."
+  ps aux | grep smf | egrep "(8686|5005)" | awk '{print $2}' | xargs kill  > /dev/null 2> /dev/null
+	echo "Done"
+
+else
+  # usage 2: set up port to a specific machine
+
+  machine=$1
+  target_port=$2
+  local_port=$3
+
+  port_alter=$(echo $machine | cut -d: -f2)
+  if [[ $machine != $port_alter ]]; then
+    machine=$(echo $machine | cut -d: -f1)
+    target_port=$port_alter
+  fi
+
+  if [[ $target_port != "" ]]; then
+			if [[ $target_port != $local_port ]]; then
+					local_port=$target_port
+			fi
+	fi
+
+  if [[ $machine == "1" ]]; then 
+	  echo "Tunnel to Staging 1: smf1-adt-35-sr4.prod.twitter.com"
+    machine=smf1-adt-35-sr4.prod.twitter.com
+  elif [[ $machine == "2" ]]; then
+	  echo "Tunnel to Staging 2: smf1-aas-07-sr3.prod.twitter.com"
+    machine=smf1-aas-07-sr3.prod.twitter.com
+  elif [[ $machine == "" ]]; then
+    # production machine!
+    machine=smf1-aes-31-sr4.prod.twitter.com
+  fi
+
+  if [[ $target_port == "" ]]; then
+    target_port=8686
+  fi
+	if [[ $local_port == "" ]]; then
+    local_port=8686
+	fi
+
+  echo "All traffic to the local port $local_port will be tunneled to $machine:$target_port"
+  
+  echo "ssh -f search@$machine -L $local_port:$machine:$target_port -N"
+  set -x
+  ssh -f search@$machine -L $local_port:$machine:$target_port -N
+  echo "Done"
+fi
+

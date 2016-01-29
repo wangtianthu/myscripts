@@ -1,0 +1,38 @@
+#!/bin/bash
+
+cmd=
+target=
+if [[ $# == 1 ]]; then
+  cmd=s
+  target=$1
+else
+  cmd=$1
+  target=$2
+fi
+
+dir=java/com/twitter/search
+
+if [[ $cmd == "b" ]]; then
+  dir=java/com/twitter/search/blender
+elif [[ $cmd == "e" ]]; then
+  dir=java/com/twitter/search/blender
+elif [[ $cmd == "s" ]]; then
+  dir=java/com/twitter/search
+elif [[ $cmd == "a" ]]; then
+  dir=java/com/twitter/search/assistance
+elif [[ $cmd == "x" ]]; then
+  dir=java/com/twitter/expertsearch
+elif [[ $cmd == "t" ]]; then
+  dir=java/com/twitter/typeahead
+elif [[ $cmd == "r" ]]; then
+  dir=./*/resources
+elif [[ $cmd == "th" ]]; then
+  dir=thrift
+elif [[ $cmd == "!" ]]; then
+  dir=java
+fi
+
+cmd="grep -i -r -n \"$target\" science/src/$dir science/tests/$dir"
+echo $cmd
+$cmd
+echo

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+type=$1
+target=search/blender/app/adaptive
+
+if [[ $type == "s" ]]; then
+  target=search/blender/app/search
+  shift
+elif [[ $type == "t" ]]; then
+  target=search/blender/app/typeahead
+  shift
+elif [[ $type == "tl" ]]; then
+  target=timelines/blender
+  shift
+elif [[ $type == "d" ]]; then
+  target=discover/blender
+  shift
+fi
+
+echo "Using target $target"
+
+cmd="science/search/blender/blender_on_mesos.sh  -r wangtian -z smf1  -l  -d $target -e devel $@"
+echo $cmd
+$cmd
+
+branch=$(git branch | grep "*" | cut -b3- | sed 's/\//_/g')
+jobname="blender_staging_wangtian_$branch"
+echo
+echo "Job link:      https://aurora-smf1.twitter.biz/scheduler/wangtian/devel/$jobname"
+echo "HTTP link:     http://http.0.$jobname.devel.wangtian.service.smf1.twitter.com/"
+echo "Test command:  ./searchcli -mesos $jobname -w ada -u wangtian -q test"
+echo
+echo "Done"
+echo

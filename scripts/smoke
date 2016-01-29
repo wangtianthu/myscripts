@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd ~/workspace/source
+
+app=$1
+target=science/search/blender/app/adaptive/scripts/
+rate=140
+
+if [[ $app == "s" ]]; then
+  target=science/search/blender/app/search/scripts
+elif [[ $app == "t" ]]; then
+  target=science/timelines/blender/scripts
+elif [[ $app == "d" ]]; then
+  target=science/discover/blender/systest
+fi
+
+shift
+
+echo "Starting smoketest for target $target ..."
+echo
+cmd="$target/smoketest-ci"
+echo $cmd
+echo
+$cmd
+echo

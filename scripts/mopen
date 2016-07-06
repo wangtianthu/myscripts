@@ -1,0 +1,11 @@
+#!/bin/bash
+
+link=$1
+
+job=$(echo $link | cut -d/ -f7)
+env=$(echo $link | cut -d/ -f6)
+user=$(echo $link | cut -d/ -f5)
+
+path="http://http.0.${job}.${env}.${user}.service.smf1.twitter.com/"
+echo $path
+open $path

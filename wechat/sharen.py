@@ -48,23 +48,3 @@ for i in range(lines):
   if i % 3 == 2:
     print
 print "\n\n"
-
-  
-# items = [(i/4, i%4) for i in to_die]
-# idx = 0
-# for i in range(0,125):
-#   print "ROW %3d " % (i + 1),
-#   for j in range(0,4):
-#     if idx < len(items):
-#       row = items[idx][0]
-#       col = items[idx][1]
-#       if row == i and col == j:
-#         print "-%d- " % (col + 1),
-#         idx+=1
-#         continue
-#     print " .  ",
-#   print " %3d ROW" % (i + 1),
-#   print
-#   if (i+1) % 5 == 0:
-#     print
-    

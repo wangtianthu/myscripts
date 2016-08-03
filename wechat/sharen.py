@@ -23,9 +23,13 @@ to_die = weighted_pick(int(sys.argv[1]))
 to_die.sort()
 
 last=-1
+index=0
 for i in to_die:
   print "count %3d ... kill %3d" % (i - last, i + 1)
   last = i
+  index = index - 1
+  if index % 3 == 0:
+    print
 
 # No longer need to display in columnar style, WeChat has changed
 # items = [(i/4, i%4) for i in to_die]
